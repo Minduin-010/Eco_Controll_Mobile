@@ -150,7 +150,35 @@ fun TopBarProfile(onProfileClick: () -> Unit, onNotificationClick: () -> Unit) {
 
 @Composable
 fun EconomyCard(modifier: Modifier = Modifier) {
-    MiniResourceCard(title = "Economia", value = "R$ 150", icon = Icons.Default.AttachMoney, iconTint = PrimaryGreen, modifier = modifier)
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = PrimaryGreen)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp), // Mais espaço interno para "respirar"
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text("Economia Estimada", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("R$ 142,50", color = Color.White, fontSize = 32.sp, fontWeight = FontWeight.Bold)
+                Text("Neste mês", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
+            }
+            // Ícone com um fundo levemente transparente para dar destaque
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color.White.copy(alpha = 0.2f), shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.AttachMoney, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+            }
+        }
+    }
 }
 
 @Composable

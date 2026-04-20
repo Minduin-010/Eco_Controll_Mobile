@@ -24,7 +24,7 @@ import androidx.compose.ui.text.withStyle
 import com.example.eco_controll_mobile.R
 
 @Composable
-fun LoginScreen(onLoginClick: () -> Unit) {
+fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit, onNavigateToSignUp: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -35,9 +35,9 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = null,
                     tint = Color.Unspecified,
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier.size(170.dp)
                 )
-                Text(text = "Bem-vindo de volta!", color = Color.White.copy(alpha = 0.7f), fontSize = 16.sp)
+                Text(text = "Bem-vindo de volta!", color = Color.White.copy(alpha = 0.7f), fontSize = 24.sp)
             }
         }
 
@@ -71,7 +71,7 @@ fun LoginScreen(onLoginClick: () -> Unit) {
 
                 // Esqueci minha senha
                 TextButton(
-                    onClick = { /* Ação de esqueci a senha */ },
+                    onClick = onNavigateToForgotPassword,
                     modifier = Modifier.align(Alignment.End)
                 ) {
                     Text("Esqueci minha senha", color = Color(0xFF5D88A5))
@@ -94,7 +94,7 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Criar conta (Sempre visível no fundo do card)
-                TextButton(onClick = { /* Navegar para cadastro */ }) {
+                TextButton(onClick = onNavigateToSignUp) {
                     Text(
                         text = buildAnnotatedString {
                             withStyle(style = SpanStyle(color = PrimaryGreen)) {

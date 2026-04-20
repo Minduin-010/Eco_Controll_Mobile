@@ -25,9 +25,14 @@ import com.example.eco_controll_mobile.ui.theme.*
 @Composable
 fun ManageCisternScreen(onNavigateBack: () -> Unit) {
 
+    // Estados da Tela
     var alertsEnabled by remember { mutableStateOf(true) }
     var minLimit by remember { mutableStateOf(20f) }
     var sensorsEnabled by remember { mutableStateOf(true) }
+
+    // Estados do Menu Dropdown (Unidade de Medida)
+    var expandedUnitMenu by remember { mutableStateOf(false) }
+    var selectedUnit by remember { mutableStateOf("Litros (L)") }
 
     Scaffold(
         containerColor = DarkBackground,
@@ -48,10 +53,11 @@ fun ManageCisternScreen(onNavigateBack: () -> Unit) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()), // AQUI ESTÁ A CORREÇÃO MÁGICA!
+                .verticalScroll(rememberScrollState()), // Permite rolar a tela se ficar pequena
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
+            // --- CABEÇALHO ---
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(vertical = 16.dp)) {
                 Box(modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(WaterBlue), contentAlignment = Alignment.Center) {
                     Icon(Icons.Rounded.WaterDrop, contentDescription = null, tint = Color.White)
@@ -60,6 +66,7 @@ fun ManageCisternScreen(onNavigateBack: () -> Unit) {
                 Text("Gerenciar Cisterna", color = TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             }
 
+            // --- 1. ALERTAS ATIVOS ---
             SettingsCard {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -74,6 +81,7 @@ fun ManageCisternScreen(onNavigateBack: () -> Unit) {
                 }
             }
 
+            // --- 2. LIMITE MÍNIMO (SLIDER) ---
             SettingsCard(containerColor = Color.White) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -92,19 +100,47 @@ fun ManageCisternScreen(onNavigateBack: () -> Unit) {
                 }
             }
 
+            // --- 3. UNIDADE DE MEDIDA (DROPDOWN MENU) ---
             SettingsCard(containerColor = Color.White) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Column {
-                        Text("Unidade de Medida", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Unidade de Medida", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         Text("Escolha entre Litros ou m³", color = Color.Gray, fontSize = 12.sp)
                     }
-                    Button(onClick = { }, colors = ButtonDefaults.buttonColors(containerColor = DarkBackground), shape = RoundedCornerShape(12.dp)) {
-                        Text("Litros (L) ▼", color = Color.White)
+
+                    // Caixa que segura o botão e o menu pop-up
+                    Box {
+                        Button(
+                            onClick = { expandedUnitMenu = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = DarkBackground),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text("$selectedUnit ▼", color = Color.White)
+                        }
+
+                        // O Menu em si que aparece ao clicar
+                        DropdownMenu(
+                            expanded = expandedUnitMenu,
+                            onDismissRequest = { expandedUnitMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Litros (L)") },
+                                onClick = { selectedUnit = "Litros (L)"; expandedUnitMenu = false }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Metros Cúbicos (m³)") },
+                                onClick = { selectedUnit = "Metros Cúbicos (m³)"; expandedUnitMenu = false }
+                            )
+                        }
                     }
                 }
-            }
+            } // <- ESTA ERA A CHAVE QUE FALTAVA FECHAR NO SEU CÓDIGO ORIGINAL!
 
-            // O Card que estava cortado no meio (parecendo um botão fantasma)
+            // --- 4. SENSORES ATIVOS ---
             SettingsCard(containerColor = Color.White) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Column {
@@ -115,15 +151,22 @@ fun ManageCisternScreen(onNavigateBack: () -> Unit) {
                 }
             }
 
-            // Espaço no final para a tela rolar livremente até o fim
+            // Espaço no final para a tela rolar livremente até o fim sem cortar no teclado/borda
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
+// Componente Auxiliar que cria o formato do "Card" com bordas arredondadas e padding interno
 @Composable
 fun SettingsCard(containerColor: Color = CardBackground, content: @Composable () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = containerColor)) {
-        Box(modifier = Modifier.padding(20.dp)) { content() }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = containerColor)
+    ) {
+        Box(modifier = Modifier.padding(20.dp)) {
+            content()
+        }
     }
 }

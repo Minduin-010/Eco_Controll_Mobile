@@ -91,11 +91,8 @@ fun HomeScreen(
                 onManageClick = onNavigateToManageSolar
             )
 
-            // 2. CARDS DE ECONOMIA E CO2 EMBAIXO (Lado a Lado)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                EconomyCard(modifier = Modifier.weight(1f))
-                CO2Card(modifier = Modifier.weight(1f))
-            }
+            // 2. CARD DE ECONOMIA OCUPANDO A LARGURA TODA
+            EconomyCard(modifier = Modifier.fillMaxWidth())
 
             // 3. ACESSO RÁPIDO
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -154,11 +151,6 @@ fun TopBarProfile(onProfileClick: () -> Unit, onNotificationClick: () -> Unit) {
 @Composable
 fun EconomyCard(modifier: Modifier = Modifier) {
     MiniResourceCard(title = "Economia", value = "R$ 150", icon = Icons.Default.AttachMoney, iconTint = PrimaryGreen, modifier = modifier)
-}
-
-@Composable
-fun CO2Card(modifier: Modifier = Modifier) {
-    MiniResourceCard(title = "CO2 Salvo", value = "12 kg", icon = Icons.Default.Eco, iconTint = PrimaryGreen, modifier = modifier)
 }
 
 @Composable

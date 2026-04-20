@@ -23,7 +23,6 @@ fun CisternRegistrationScreen(onBackClick: () -> Unit) {
     var name by remember { mutableStateOf("") }
     var capacity by remember { mutableStateOf("") }
     var roofArea by remember { mutableStateOf("") }
-    var alertLevel by remember { mutableStateOf("") }
 
     Scaffold(
         containerColor = DarkBackground,
@@ -44,7 +43,6 @@ fun CisternRegistrationScreen(onBackClick: () -> Unit) {
             CustomTextField(value = name, onValueChange = { name = it }, label = "Nome / Apelido (Ex: Cisterna Quintal)")
             CustomTextField(value = capacity, onValueChange = { capacity = it }, label = "Capacidade Total (Litros)")
             CustomTextField(value = roofArea, onValueChange = { roofArea = it }, label = "Área de Captação do Telhado (m²)")
-            CustomTextField(value = alertLevel, onValueChange = { alertLevel = it }, label = "Avisar quando o nível chegar a (%)")
 
             Spacer(modifier = Modifier.height(24.dp))
 

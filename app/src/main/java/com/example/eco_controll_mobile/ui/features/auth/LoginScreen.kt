@@ -22,11 +22,18 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import com.example.eco_controll_mobile.R
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import android.util.Log
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit, onNavigateToSignUp: () -> Unit) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var usuario by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize().background(DarkBackground)) {
         Box(modifier = Modifier.weight(1.2f).fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -51,8 +58,8 @@ fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit
                 // Campo E-mail
                 Text("E-mail", color = DarkBackground, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 8.dp))
                 EcoTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = usuario,
+                    onValueChange = { usuario = it },
                     label = "E-mail",
                     leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null, tint = Color.Gray) }
                 )
@@ -62,8 +69,8 @@ fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit
                 // Campo Senha
                 Text("Senha", color = DarkBackground, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 8.dp))
                 EcoTextField(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = senha,
+                    onValueChange = { senha = it },
                     label = "Senha",
                     leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = Color.Gray) },
                     isPassword = true
@@ -81,7 +88,42 @@ fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit
 
                 // Botão Entrar
                 Button(
-                    onClick = onLoginClick,
+                    onClick = {
+//                        Log.d("LOGIN", "Botão clicado")
+                        println("BOTAO CLICADO")
+
+                        scope.launch {
+                            try {
+                                Log.d("LOGIN", "Iniciando requisição")
+
+                                val response = RetrofitClient.api.login(
+                                    LoginRequest(
+                                        usuario = usuario,
+                                        senha = senha
+                                    )
+                                )
+
+                                Log.d("LOGIN", "Resposta recebida")
+
+                                if (response.isSuccessful) {
+                                    val token = response.body()?.token
+
+                                    val sharedPref = context.getSharedPreferences("app", Context.MODE_PRIVATE)
+                                    sharedPref.edit().putString("token", token).apply()
+
+                                    Log.d("LOGIN", "Token salvo: $token")
+
+                                    onLoginClick()
+                                } else {
+                                    Log.d("LOGIN", "Erro HTTP: ${response.code()}")
+                                    Log.d("LOGIN", "Erro body: ${response.errorBody()?.string()}")
+                                }
+
+                            } catch (e: Exception) {
+                                Log.e("LOGIN", "Erro: ${e.message}", e)
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),

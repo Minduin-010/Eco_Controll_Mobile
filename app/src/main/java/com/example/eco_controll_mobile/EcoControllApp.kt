@@ -19,17 +19,27 @@ import com.example.eco_controll_mobile.ui.features.resources.CisternHistoryScree
 import com.example.eco_controll_mobile.ui.features.resources.ManageCisternScreen
 import com.example.eco_controll_mobile.ui.features.resources.ManageSolarScreen
 import com.example.eco_controll_mobile.ui.features.resources.SolarHistoryScreen
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun EcoControllApp() {
+    val context = LocalContext.current
+    val sharedPref = context.getSharedPreferences("app", Context.MODE_PRIVATE)
+    val token = sharedPref.getString("token", null)
     val navController = rememberNavController()
+    val startDestination = if (token != null) "home" else "login"
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = startDestination) {
 
         // --- 1. MÓDULO DE AUTENTICAÇÃO ---
         composable(route = "login") {
             LoginScreen(
-                onLoginClick = { navController.navigate("home") },
+                onLoginClick = {
+                    navController.navigate("home") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
                 onNavigateToSignUp = { navController.navigate("sign_up") },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") }
             )

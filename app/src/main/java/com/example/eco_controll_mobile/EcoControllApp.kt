@@ -30,7 +30,18 @@ fun EcoControllApp() {
     val navController = rememberNavController()
     val startDestination = if (token != null) "home" else "login"
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(navController = navController, startDestination = "splash") {
+
+        // --- 0. TELA DE APRESENTAÇÃO ---
+        composable(route = "splash") {
+            SplashScreen(
+                onTimeout = {
+                    navController.navigate("login") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
 
         // --- 1. MÓDULO DE AUTENTICAÇÃO ---
         composable(route = "login") {

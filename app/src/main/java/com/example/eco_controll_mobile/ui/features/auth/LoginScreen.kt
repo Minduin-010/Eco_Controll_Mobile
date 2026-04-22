@@ -96,6 +96,13 @@ fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit
                             try {
                                 Log.d("LOGIN", "Iniciando requisição")
 
+                                //APAGAR ISSO NO FIM DO PERIDO DE DESENVOLVIMENTO
+                                if (usuario == "front" && senha == "front123") {
+                                    Log.d("LOGIN", "Login front usado")
+                                    onLoginClick()
+                                    return@launch
+                                }
+
                                 val response = RetrofitClient.api.login(
                                     LoginRequest(
                                         usuario = usuario,

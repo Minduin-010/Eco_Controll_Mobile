@@ -36,8 +36,14 @@ fun EcoControllApp() {
         composable(route = "splash") {
             SplashScreen(
                 onTimeout = {
-                    navController.navigate("login") {
-                        popUpTo("splash") { inclusive = true }
+                    if (token != null) {
+                        navController.navigate("home") {
+                            popUpTo("splash") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("login") {
+                            popUpTo("splash") { inclusive = true }
+                        }
                     }
                 }
             )

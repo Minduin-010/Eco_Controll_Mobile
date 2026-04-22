@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import android.util.Log
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
+import com.example.eco_controll_mobile.network.RetrofitClient
 
 @Composable
 fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit, onNavigateToSignUp: () -> Unit) {

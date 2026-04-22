@@ -17,7 +17,8 @@ fun EcoTextField(
     onValueChange: (String) -> Unit,
     label: String,
     leadingIcon: @Composable (() -> Unit)? = null,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     OutlinedTextField(
         value = value,
@@ -25,6 +26,7 @@ fun EcoTextField(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         // CORREÇÃO: Utilizando OutlinedTextFieldDefaults para versões recentes do Material 3
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = CardBackground,

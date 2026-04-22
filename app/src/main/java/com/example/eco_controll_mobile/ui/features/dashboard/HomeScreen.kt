@@ -91,8 +91,8 @@ fun HomeScreen(
                 onManageClick = onNavigateToManageSolar
             )
 
-            // 2. CARD DE ECONOMIA OCUPANDO A LARGURA TODA
-            EconomyCard(modifier = Modifier.fillMaxWidth())
+            // 2. NOVO CARD: DICA SUSTENTÁVEL (Substitui o de Economia)
+            EcoTipCard(modifier = Modifier.fillMaxWidth())
 
             // 3. ACESSO RÁPIDO
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -135,9 +135,26 @@ fun TopBarProfile(onProfileClick: () -> Unit, onNotificationClick: () -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground),
         title = {
-            Column(modifier = Modifier.fillMaxWidth().clickable { onProfileClick() }, horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(modifier = Modifier.size(45.dp).clip(CircleShape).background(Color.Gray))
-                Text(text = "Lincoln", color = PrimaryGreen, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            // Mudamos para Row para ficar alinhado à esquerda perfeitamente
+            Row(
+                modifier = Modifier.clickable { onProfileClick() },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Foto/Avatar
+                Box(
+                    modifier = Modifier
+                        .size(45.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Textos ao lado da foto
+                Column {
+                    Text(text = "Olá,", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
+                    Text(text = "Lincoln", color = PrimaryGreen, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                }
             }
         },
         actions = {
@@ -148,34 +165,42 @@ fun TopBarProfile(onProfileClick: () -> Unit, onNotificationClick: () -> Unit) {
     )
 }
 
+// === NOVO COMPONENTE: DICA SUSTENTÁVEL ===
 @Composable
-fun EconomyCard(modifier: Modifier = Modifier) {
+fun EcoTipCard(modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryGreen)
+        colors = CardDefaults.cardColors(containerColor = PrimaryGreen.copy(alpha = 0.15f)) // Fundo verde transparente
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp), // Mais espaço interno para "respirar"
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text("Economia Estimada", color = Color.White.copy(alpha = 0.8f), fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text("R$ 142,50", color = Color.White, fontSize = 32.sp, fontWeight = FontWeight.Bold)
-                Text("Neste mês", color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
-            }
-            // Ícone com um fundo levemente transparente para dar destaque
+            // Ícone de Lâmpada (Dica)
             Box(
                 modifier = Modifier
-                    .size(56.dp)
-                    .background(Color.White.copy(alpha = 0.2f), shape = CircleShape),
+                    .size(50.dp)
+                    .background(PrimaryGreen.copy(alpha = 0.2f), shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.AttachMoney, contentDescription = null, tint = Color.White, modifier = Modifier.size(32.dp))
+                Icon(Icons.Default.Lightbulb, contentDescription = "Dica", tint = PrimaryGreen, modifier = Modifier.size(28.dp))
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Texto da Dica
+            Column {
+                Text("Dica do Dia", color = PrimaryGreen, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    "Utilize a água da sua cisterna para regar plantas no início da manhã ou fim da tarde para evitar a evaporação rápida.",
+                    color = TextPrimary,
+                    fontSize = 13.sp,
+                    lineHeight = 18.sp
+                )
             }
         }
     }

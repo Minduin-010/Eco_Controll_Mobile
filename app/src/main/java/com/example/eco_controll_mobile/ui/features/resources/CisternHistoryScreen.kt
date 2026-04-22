@@ -70,34 +70,39 @@ fun CisternHistoryScreen(
                 Text("Cisterna - Histórico", color = TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.Bold)
             }
 
-            // O SEU CARD BEGE ORIGINAL COM O GRÁFICO ANIMADO
+            // CARD DO GRÁFICO (Agora com X e Y)
             Card(
-                modifier = Modifier.fillMaxWidth().height(220.dp),
+                modifier = Modifier.fillMaxWidth().height(240.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFC5BAA1)) // Fundo Bege
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Nível da Água - Última Semana", color = DarkBackground, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
-                    // Gráfico preenchendo o espaço interno
-                    SimpleLineChartMock(modifier = Modifier.fillMaxSize(), lineColor = WaterBlue)
+
+                    // Chamada do Gráfico Modificado
+                    SimpleLineChartWithLabels(modifier = Modifier.fillMaxSize(), lineColor = WaterBlue)
                 }
             }
 
-            // SEUS CARDS DE MÉTRICAS (Lado a lado apenas)
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                MetricCard(
-                    modifier = Modifier.weight(1f),
-                    title = "Capacidade",
-                    value = "10.000 L",
-                    icon = { Icon(Icons.Rounded.WaterDrop, contentDescription = null, tint = WaterBlue) }
-                )
-                MetricCard(
-                    modifier = Modifier.weight(1f),
-                    title = "Consumo Diário",
-                    value = "285 L",
-                    icon = { Icon(Icons.Rounded.TrendingDown, contentDescription = null, tint = Color(0xFFE57373)) }
-                )
+            // 3. NOVO CONTEÚDO PARA PREENCHER O ESPAÇO VAZIO
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = PrimaryGreen.copy(alpha = 0.1f)) // Fundo verde transparente
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Rounded.Info, contentDescription = null, tint = PrimaryGreen, modifier = Modifier.size(36.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column {
+                        Text("Previsão de Duração", color = PrimaryGreen, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text("Neste ritmo de consumo, a água da sua cisterna durará aproximadamente 35 dias.", color = TextPrimary, fontSize = 14.sp)
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -109,7 +114,7 @@ fun CisternHistoryScreen(
 // GRÁFICO ANIMADO (MANTIDO E FUNCIONAL)
 // ==========================================
 @Composable
-fun SimpleLineChartMock(modifier: Modifier = Modifier, lineColor: Color = WaterBlue) {
+fun SimpleLineChartWithLabels(modifier: Modifier = Modifier, lineColor: Color = WaterBlue) {
     val progress = remember { Animatable(0f) }
 
     LaunchedEffect(key1 = true) {
@@ -117,22 +122,56 @@ fun SimpleLineChartMock(modifier: Modifier = Modifier, lineColor: Color = WaterB
     }
 
     val mockData = listOf(60f, 65f, 62f, 70f, 85f, 80f, 95f)
+    val daysOfWeek = listOf("S", "T", "Q", "Q", "S", "S", "D")
 
-    Canvas(modifier = modifier) {
-        val path = Path()
-        val stepX = size.width / (mockData.size - 1)
+    Row(modifier = modifier) {
+        // Eixo Y (Valores na vertical)
+        Column(
+            modifier = Modifier.fillMaxHeight().padding(end = 8.dp, bottom = 20.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.End
+        ) {
+            Text("100%", fontSize = 12.sp, color = DarkBackground, fontWeight = FontWeight.Medium)
+            Text("50%", fontSize = 12.sp, color = DarkBackground, fontWeight = FontWeight.Medium)
+            Text("0%", fontSize = 12.sp, color = DarkBackground, fontWeight = FontWeight.Medium)
+        }
 
-        mockData.forEachIndexed { index, value ->
-            val animatedValue = value * progress.value
-            val y = size.height - (animatedValue / 100f * size.height)
+        // Gráfico e Eixo X (Dias da semana na horizontal)
+        Column(modifier = Modifier.fillMaxSize()) {
+            // A linha do gráfico
+            Canvas(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                val path = Path()
+                val stepX = size.width / (mockData.size - 1)
 
-            if (index == 0) {
-                path.moveTo(index * stepX, y)
-            } else {
-                path.lineTo(index * stepX, y)
+                // Reduzindo um pouco a altura máxima para a linha não cortar no topo
+                val usableHeight = size.height * 0.9f
+
+                mockData.forEachIndexed { index, value ->
+                    val animatedValue = value * progress.value
+                    // Calcula a posição invertendo o Y (0 é no topo do Canvas)
+                    val y = size.height - (animatedValue / 100f * usableHeight)
+
+                    if (index == 0) {
+                        path.moveTo(index * stepX, y)
+                    } else {
+                        path.lineTo(index * stepX, y)
+                    }
+                }
+                drawPath(path = path, color = lineColor, style = Stroke(width = 8f))
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Eixo X
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                daysOfWeek.forEach { day ->
+                    Text(day, fontSize = 12.sp, color = DarkBackground, fontWeight = FontWeight.Medium)
+                }
             }
         }
-        drawPath(path = path, color = lineColor, style = Stroke(width = 8f))
     }
 }
 

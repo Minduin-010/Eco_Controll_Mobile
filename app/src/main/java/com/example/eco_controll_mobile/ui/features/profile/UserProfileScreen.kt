@@ -131,7 +131,7 @@ fun UserProfileScreen(onNavigateBack: () -> Unit) {
                 onClick = { /* Excluir conta */ },
                 modifier = Modifier.padding(bottom = 24.dp)
             ) {
-                Text("🗑 Excluir Conta", color = Color.Red.copy(alpha = 0.8f))
+                Text("Sair da conta", color = Color.Red.copy(alpha = 0.8f))
             }
         }
     }

@@ -33,6 +33,8 @@ import com.example.eco_controll_mobile.network.RetrofitClient
 fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit, onNavigateToSignUp: () -> Unit) {
     var usuario by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
+    // 1. Nova variável de estado para controlar o "olhinho"
+    var passwordVisible by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -67,14 +69,26 @@ fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campo Senha
+                // Campo Senha (Atualizado com o Olho)
                 Text("Senha", color = DarkBackground, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 8.dp))
                 EcoTextField(
                     value = senha,
                     onValueChange = { senha = it },
                     label = "Senha",
                     leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = Color.Gray) },
-                    isPassword = true
+
+                    // 2. Controlamos se ele é senha baseado no estado
+                    isPassword = !passwordVisible,
+
+                    // 3. Adicionamos o ícone no final (trailingIcon)
+                    trailingIcon = {
+                        val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                        val description = if (passwordVisible) "Ocultar senha" else "Mostrar senha"
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, contentDescription = description, tint = Color.Gray)
+                        }
+                    }
                 )
 
                 // Esqueci minha senha

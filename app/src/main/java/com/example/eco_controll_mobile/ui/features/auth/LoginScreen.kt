@@ -26,8 +26,11 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import android.util.Log
 import android.content.Context
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.platform.LocalContext
 import com.example.eco_controll_mobile.network.RetrofitClient
+import android.widget.Toast
 
 @Composable
 fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit, onNavigateToSignUp: () -> Unit) {
@@ -101,74 +104,53 @@ fun LoginScreen(onLoginClick: () -> Unit, onNavigateToForgotPassword: () -> Unit
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Botão Entrar
+                // BOTÃO ENTRAR COM AS VALIDAÇÕES E MENSAGENS
                 Button(
                     onClick = {
-//                        Log.d("LOGIN", "Botão clicado")
-                        println("BOTAO CLICADO")
-
                         scope.launch {
                             try {
-                                Log.d("LOGIN", "Iniciando requisição")
-
-                                //APAGAR ISSO NO FIM DO PERIDO DE DESENVOLVIMENTO
+                                // Dados mockados para desenvolvimento (APAGAR DEPOIS)
                                 if (usuario == "front" && senha == "front123") {
-                                    Log.d("LOGIN", "Login front usado")
+                                    Toast.makeText(context, "Login efetuado com sucesso", Toast.LENGTH_SHORT).show()
                                     onLoginClick()
                                     return@launch
                                 }
 
-                                val response = RetrofitClient.api.login(
-                                    LoginRequest(
-                                        usuario = usuario,
-                                        senha = senha
-                                    )
-                                )
-
-                                Log.d("LOGIN", "Resposta recebida")
+                                // Faz a chamada para o Back-end
+                                val response = RetrofitClient.api.login(LoginRequest(usuario = usuario, senha = senha))
 
                                 if (response.isSuccessful) {
-                                    val token = response.body()?.token
+                                    // 1. MENSAGEM DE SUCESSO
+                                    Toast.makeText(context, "Login efetuado com sucesso", Toast.LENGTH_SHORT).show()
 
+                                    val token = response.body()?.token
                                     val sharedPref = context.getSharedPreferences("app", Context.MODE_PRIVATE)
                                     sharedPref.edit().putString("token", token).apply()
-
-                                    Log.d("LOGIN", "Token salvo: $token")
-
                                     onLoginClick()
                                 } else {
-                                    Log.d("LOGIN", "Erro HTTP: ${response.code()}")
-                                    Log.d("LOGIN", "Erro body: ${response.errorBody()?.string()}")
+                                    // 2. MENSAGEM DE CREDENCIAIS INCORRETAS
+                                    Toast.makeText(context, "Usuario e/ou senha incorretos", Toast.LENGTH_SHORT).show()
                                 }
 
                             } catch (e: Exception) {
-                                Log.e("LOGIN", "Erro: ${e.message}", e)
+                                // 3. MENSAGEM E LOG DE ERRO NO SERVIDOR
+                                Toast.makeText(context, "Erro ao acessar o servidor", Toast.LENGTH_SHORT).show()
+                                Log.e("LOGIN_ERRO", "Erro de conexão com o back-end: ${e.message}", e)
                             }
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
-                    shape = RoundedCornerShape(16.dp)
+                    modifier = Modifier.fillMaxWidth().height(56.dp), colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen), shape = RoundedCornerShape(16.dp)
                 ) {
                     Text("Entrar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Criar conta (Sempre visível no fundo do card)
                 TextButton(onClick = onNavigateToSignUp) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(style = SpanStyle(color = PrimaryGreen)) {
-                                append("Ainda não tem conta? ")
-                            }
-                            withStyle(style = SpanStyle(color = Color(0xFF5D88A5))) {
-                                append("Cadastre-se!")
-                            }
-                        }
-                    )
+                    Text(text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = PrimaryGreen)) { append("Ainda não tem conta? ") }
+                        withStyle(style = SpanStyle(color = Color(0xFF5D88A5))) { append("Cadastre-se!") }
+                    })
                 }
             }
         }

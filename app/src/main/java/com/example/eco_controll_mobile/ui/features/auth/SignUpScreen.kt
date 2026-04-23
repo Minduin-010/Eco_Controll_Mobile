@@ -1,17 +1,24 @@
 package com.example.eco_controll_mobile.ui.features.auth
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.eco_controll_mobile.ui.theme.*
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,6 +32,9 @@ fun SignUpScreen(onBackClick: () -> Unit) {
     // Estados dos "olhinhos" (visibilidade)
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         containerColor = DarkBackground,
@@ -106,8 +116,45 @@ fun SignUpScreen(onBackClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // BOTÃO DE FINALIZAR CADASTRO
             Button(
-                onClick = onBackClick,
+                onClick = {
+                    // 1. VALIDAÇÃO DE CAMPOS VAZIOS
+                    if (name.isBlank() || nickname.isBlank() || email.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+                        Toast.makeText(context, "Dados não preenchidos corretamente", Toast.LENGTH_SHORT).show()
+                        return@Button // Impede o código de continuar
+                    }
+
+                    // 2. VALIDAÇÃO DE QUANTIDADE DE CARACTERES (Mínimo 8)
+                    if (password.length < 8) {
+                        Toast.makeText(context, "A senha deve ter pelo menos 8 caracteres", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    // Bônus: Validar se as senhas são iguais
+                    if (password != confirmPassword) {
+                        Toast.makeText(context, "As senhas não coincidem", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    // Se passou por todas as regras, tenta salvar no servidor
+                    scope.launch {
+                        try {
+                            // AQUI VAI O CÓDIGO DO SEU RETROFIT PARA CADASTRAR (Exemplo ilustrativo)
+                            // val response = RetrofitClient.api.cadastrar(...)
+
+                            // Simulando que deu certo:
+                            // 3. MENSAGEM DE SUCESSO
+                            Toast.makeText(context, "Cadastro efetuado com sucesso", Toast.LENGTH_SHORT).show()
+                            onBackClick() // Volta para a tela de login
+
+                        } catch (e: Exception) {
+                            // 4. MENSAGEM DE ERRO DO SERVIDOR
+                            Toast.makeText(context, "Erro ao acessar o servidor", Toast.LENGTH_SHORT).show()
+                            Log.e("CADASTRO_ERRO", "Erro de conexão: ${e.message}", e)
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
             ) {
